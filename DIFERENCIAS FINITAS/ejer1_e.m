@@ -26,7 +26,6 @@ Ttotal=T1:dt:T2;
 
 #ARMADO MATRIZ K
 #FUNCIONALIDAD FIJA
-#NO VA SIGNO MENOS,OJO
 fila = [k/dx^2 -(2*k/dx^2+c) k/dx^2];
   for i=2:(n-1)
     K(i,i-1:i+1)=fila;
@@ -58,16 +57,16 @@ for i=1:length(Ttotal)
   axis(ejes);
   pause(0.01);
   #FORWARD
-  #T_ap(:,i+1)=((dt/pcp)*(K*T_ap(:,i)+b))+T_ap(:,i);
-  #T_ap(end,i+1)=50;#CONDICION DIRICHLET
+  T_ap(:,i+1)=((dt/pcp)*(K*T_ap(:,i)+b))+T_ap(:,i);
+  T_ap(end,i+1)=50;#CONDICION DIRICHLET
 
   #BACKWARD
   #T_ap(:,i+1)=((pcp/dt)*IDENTIDAD-K)\(b+(pcp/dt)*T_ap(:,i));
   #T_ap(end,i+1)=50;#CONDICION DIRICHLET
 
   #CRANK-NICHOLSON
-  T_ap(:,i+1)=((pcp/dt)*IDENTIDAD - 0.5*K)\(((0.5*K + (pcp/dt)*IDENTIDAD)*T_ap(:,i)) +b);
-  T_ap(end,i+1)=50;#CONDICION DIRICHLET
+  #T_ap(:,i+1)=((pcp/dt)*IDENTIDAD - 0.5*K)\(((0.5*K + (pcp/dt)*IDENTIDAD)*T_ap(:,i)) +b);
+  #T_ap(end,i+1)=50;#CONDICION DIRICHLET
 endfor
 
 hold on;

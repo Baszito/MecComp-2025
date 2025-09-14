@@ -1,76 +1,138 @@
 function [T]=difFinitas(xnode,model,cb,et)
+  #SOLO ESQUEMAS CON MALLAS HOMOGENEAS
   #------------------------------------------------------------------------#
                     #-----------------DATOS-----------------#
   #------------------------------------------------------------------------#
   #xnode es un vector de coordenadas nodales
   n=length(xnode); #tamaño de xnode
-  h=xnode(2)-xnode(1); #tamaño del paso
+  dx=xnode(2)-xnode(1); #tamaño del paso
 
   #separacion de las constantes del modelo :
-  k=model(1); #difusividad
-  c=model(2); #termino reactivo
-  p=model(3); #densidad
-  Cp=model(4); #calor especifico
-  #NOTA : Esto considera solo fuentes constantes. Si tenes una fuente del tipo 100*x, modificar G
-  G=model(5); #fuente
+  k=model.k; #difusividad
+  c=model.c; #termino reactivo
+  rho=model.rho; #densidad
+  cp=model.cp; #calor especifico
+  #NOTA : Esto considera solo fuentes constantes. Si tenes una fuente del tipo 100*x, modificar Q
+  Q=model.Q; #fuente
 
   #armado del sistema de ec diferenciales
   K=zeros(n,n); #matriz a resolver
   b=zeros(n,1); #matriz de coeficientes
+  #FUNCIONALIDAD FIJA
+  fila = [1 -(2+c*dx*dx/k) 1];
+  for i=2:(n-1)
+    K(i,i-1:i+1)=fila;
+    b(i)=(dx^2)*Q(i)/k;
+  end
   #------------------------------------------------------------------------#
   #--------------------------Condiciones de borde y armado de la matriz K--------------------------#
   #------------------------------------------------------------------------#
   #cb(1,1) = tipo de cond borde izq
-  #DIRICHLET
-  if(cb(1,1)==1)
-    b(1)=cb(1,2);
-    K(1,1)=1;
   #NEUMANN
-  elseif(cb(1,1)==2)
-    b(1)=-(G/k)*(h^2)+2*h*cb(1,2)/k;
-    K(1,1)=-(2+c*h*h/k);
+  if(cb(1,1)==2)
+    b(1)=(Q(1)/k)*(dx^2) - 2*dx*cb(1,2)/k;
+    K(1,1)=-(2+c*dx*dx/k);
     K(1,2)=2;
   #ROBIN
   elseif(cb(1,1)==3)
-    b(1)=-(G/k)*(h^2)-2*h*cb(1,2)*cb(1,3)/k;
-    K(1,1)=-(2 + c*h*h/k + 2*h*cb(1,2)/k );
+    b(1)=(Q(1)/k)*(dx^2) + 2*dx*cb(1,2)*cb(1,3)/k;
+    K(1,1)=-(2 + c*dx*dx/k + 2*dx*cb(1,2)/k );
     K(1,2)=2;
   endif
   #cb(2,1) = tipo de cond
-  if(cb(2,1)==1)
-    b(end)=cb(2,2);
-    K(n,n)=1;
   #NEUMANN
-  elseif(cb(2,1)==2)
-    b(end)=-(G/k)*(h^2)+2*h*cb(2,2)/k;
-    K(n,n)=-(2+c*h*h/k);
+  if(cb(2,1)==2)
+    b(end)=(Q(n)/k)*(dx^2)+2*dx*cb(2,2)/k;
+    K(n,n)=-(2+c*dx*dx/k);
     K(n,n-1)=2;
-  #ROBIN
-  elseif(cb(2,1)==3)
-    b(n)=-(G/k)*(h^2)-2*h*cb(2,2)*cb(2,3)/k;
-    K(n,n)=-(2 + c*h*h/k + 2*h*cb(2,2)/k );
-    K(n,n-1)=2;
+    #ROBIN
+    elseif(cb(2,1)==3)
+      b(n)=(Q(n)/k)*(dx^2) + 2*dx*cb(2,2)*cb(2,3)/k;
+      K(n,n)=-(2 + c*dx*dx/k + 2*dx*cb(2,2)/k );
+      K(n,n-1)=2;
   endif
-
-  b(2:n-1)=-(G./k)*(h^2);
-  #FUNCIONALIDAD FIJA
-  fila = [1 -(2+c*h*h/k) 1];
-  for i=2:(n-1)
-    K(i,i-1:i+1)=fila;
-  end
 
   #et = esquema temporal
   #####CASO ESTACIONARIO
   if(et==0)
-    T=K\b;
-  #####FORWARD EULER
+    b*=-1;
+    if(cb(1,1)==1)
+      b(1)=cb(1,2);
+    endif
+    if(cb(2,1)==1)
+      b(n)=cb(2,2);
+    endif
+    T=inv(K)*b;
   else
-    dt=0.25*h*h/k; #La mitad de los necesarios,para tener estabilidad
-    T0=(zeros(size(xnode))); #condiciones iniciales nulas
-    T=K\b;
-    % le damos valor a la U en el nodo ficticio (t=0)
+    b;
+    K;
+  IDENTIDAD=eye(n);
+  T=zeros(length(xnode),1);
+  tol=0.001; #Cuando la dif entre un paso y otro es menor a TOL, se frena el for
+  err=100000;
+  maxit=1000;
+  it=0;
+  dt=0.25*dx*dx/k;
+  if(et==1)#Forward euler
+    while((err>tol) & (it<maxit))
+    it+=1;
+    figure(1)
+    plot(xnode,T,'*-')
+    title(sprintf('t = %5.3f',it*dt));
+    grid on;
+    grid minor;
+    pause(0.01);
+      T_aux=T;
+      T=((dt/rho*cp)*(K*T_aux+b))+T_aux;
+      if(cb(1,1)==1)
+        T(1)=cb(1,2);#CONDICION DIRICHLET
+      endif
+      if(cb(2,1)==1)
+        T(end)=cb(2,2);#CONDICION DIRICHLET
+      endif
+      err=abs(T(2:n-1)-T_aux(2:n-1));
+     endwhile
+    elseif(et==2)#Backward euler
+    K_inv=inv(((rho*cp/dt)*IDENTIDAD-K));
+    while((err>tol) & (it<maxit))
+    it+=1;
+    figure(1)
+    plot(xnode,T,'*-')
+    title(sprintf('t = %5.3f',it*dt));
+    grid on;
+    grid minor;
+    pause(0.01);
+    T_aux=T;
+     T=K_inv*(b+(rho*cp/dt)*T);
+      if(cb(1,1)==1)
+        T(1)=cb(1,2);#CONDICION DIRICHLET
+      endif
+      if(cb(2,1)==1)
+        T(end)=cb(2,2);#CONDICION DIRICHLET
+      endif
+      err=abs(T(2:n-1)-T_aux(2:n-1));
+     endwhile
+    elseif(et==3)#Crank-Nicholson
+    K_inv=inv((rho*cp/dt)*IDENTIDAD - 0.5*K);
+    while((err>tol) & (it<maxit))
+    it+=1;
+    figure(1)
+    plot(xnode,T,'*-')
+    title(sprintf('t = %5.3f',it*dt));
+    grid on;
+    grid minor;
+    pause(0.01);
+    T_aux=T;
+     T=K_inv*(((0.5*K + (rho*cp/dt)*IDENTIDAD)*T) +b);
+      if(cb(1,1)==1)
+        T(1)=cb(1,2);#CONDICION DIRICHLET
+      endif
+      if(cb(2,1)==1)
+        T(end)=cb(2,2);#CONDICION DIRICHLET
+      endif
+      err=abs(T(2:n-1)-T_aux(2:n-1));
+     endwhile
+   endif
   endif
-
-
 
 endfunction
