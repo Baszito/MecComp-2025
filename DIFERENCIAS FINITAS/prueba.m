@@ -28,25 +28,24 @@ clear all;
 
 #[T_rob]=difFinitas(xnode,model,cb,et)
 
-#xnode=linspace(1,5,256);
-#model.rho=0;
-#model.cp=0;
-#model.c=0;
-#model.k=1;
-#model.Q=100.*(xnode-3).^2;
-#model.Q
-#cb=[2 2 0;1 0 0];
-#et=0;
-
-#[T_neu]=difFinitas(xnode,model,cb,et);
-
-xnode=linspace(5,10,16);
-model.rho=1;
-model.cp=1;
+xnode=1:1/16:5;
+model.rho=0;
+model.cp=0;
 model.c=0;
-model.k=2;
-model.Q=(xnode).^3;
-cb=[3 2 100;1 50 0];
-et=1;
+model.k=1;
+model.Q=100.*(xnode-3).^2;
+cb=[2 2 0;1 0 0];
+et=0;
 
-[T_rob]=difFinitas(xnode,model,cb,et);
+[T_neu]=difFinitas(xnode,model,cb,et);
+
+#xnode=linspace(5,10,16);
+#model.rho=1;
+#model.cp=1;
+#model.c=0;
+#model.k=2;
+#model.Q=(xnode).^3;
+#cb=[3 2 100;1 50 0];
+#et=1;
+
+#[T_rob]=difFinitas(xnode,model,cb,et);

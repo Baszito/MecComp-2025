@@ -43,8 +43,12 @@ function [PHI, Q] = fdm2d_implicit(K,F,xnode,neighb,model,dt)
 
             Q=[Q,fdm2d_flux(PHI(:,n+1),neighb,xnode,model.k)];
 
-        end
-
+      end
+      #si queremos apagar/prender la fuente
+       # if(n*model.dt>=2)
+       #   F=zeros(length(F),1);
+       #   model.G=zeros(length(F),1);
+       # endif
     end
 
     disp('Método terminado por límite de iteraciones.');

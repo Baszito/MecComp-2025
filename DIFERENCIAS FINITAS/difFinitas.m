@@ -50,22 +50,23 @@ function [T]=difFinitas(xnode,model,cb,et)
       b(n)=(Q(n)/k)*(dx^2) + 2*dx*cb(2,2)*cb(2,3)/k;
       K(n,n)=-(2 + c*dx*dx/k + 2*dx*cb(2,2)/k );
       K(n,n-1)=2;
-  endif
-
+endif
   #et = esquema temporal
   #####CASO ESTACIONARIO
   if(et==0)
     b*=-1;
     if(cb(1,1)==1)
       b(1)=cb(1,2);
+      K(1,1)=1;
     endif
     if(cb(2,1)==1)
       b(n)=cb(2,2);
+      K(n,n)=1;
     endif
-    T=inv(K)*b;
+    T=K\b;
+    plot(xnode,T,'*-');
+    grid on;
   else
-    b;
-    K;
   IDENTIDAD=eye(n);
   T=zeros(length(xnode),1);
   tol=0.001; #Cuando la dif entre un paso y otro es menor a TOL, se frena el for
