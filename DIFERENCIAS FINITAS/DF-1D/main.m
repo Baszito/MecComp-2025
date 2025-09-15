@@ -54,15 +54,15 @@ close all; clear all;
 # T = difFinitas(xnode, model, cb, et);
 #
  #EJERCICIO 2.c
- L1=0; L2=1;
- N = 3;
- dx = (L2-L1)/N;
- xnode = L1:dx:L2;
- cb = [1 10 0;3 0.2 50];
- model.rho = 0; model.cp = 0;
- model.k = 1; model.c = 1;
- model.G = 50.*(ones(length(xnode))); et = [0 -1 -1 -1];
- T = difFinitas(xnode, model, cb, et);
+ #L1=0; L2=1;
+ #N = 3;
+ #dx = (L2-L1)/N;
+ #xnode = L1:dx:L2;
+ #cb = [1 10 0;3 0.2 50];
+ #model.rho = 0; model.cp = 0;
+ #model.k = 1; model.c = 1;
+ #model.G = 50.*(ones(length(xnode))); et = [0 -1 -1 -1];
+ #T = difFinitas(xnode, model, cb, et);
 
  #EJERCICIO 2.d
 # L1=0; L2=1;
@@ -112,7 +112,21 @@ close all; clear all;
 # Tex = 73.2433*sin(xnode)+50*cos(xnode);
 # T = difFinitas(xnode, model, cb, et);
 
-hold on
-plot(xnode, Tex, 'r')
-xlabel('x'); ylabel('Temp')
-legend('Aproximada', 'Exacta')
+#hold on
+#plot(xnode, Tex, 'r')
+#xlabel('x'); ylabel('Temp')
+#legend('Aproximada', 'Exacta')
+
+
+clc;
+clear all;
+xnode=-4:4/10:4;
+model.k=3;
+model.c=0;
+model.G=100.*xnode;
+model.rho=0;
+model.cp=0;
+cb=[1 20 0;3 2 10];
+et=0;
+
+[T_dir]=difFinitas(xnode,model,cb,et)
