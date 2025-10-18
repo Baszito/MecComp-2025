@@ -1,4 +1,5 @@
 #ejercicio 1 - b)
+#ACA TENER CONDICION DIRICHLET Y NEUMANN
 clc;
 clear all;
 #---------DATOS--------
