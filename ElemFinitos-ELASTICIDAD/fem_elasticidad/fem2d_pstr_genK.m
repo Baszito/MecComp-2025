@@ -19,20 +19,20 @@ function [localK] = fem2d_pstr_genK(nodes,D,th)
       b(1)=nodes(2,2)-nodes(3,2);
       b(2)=nodes(3,2)-nodes(1,2);
       b(3)=nodes(1,2)-nodes(2,2);
-    
+
       c(1)=nodes(3,1)-nodes(2,1);
       c(2)=nodes(1,1)-nodes(3,1);
       c(3)=nodes(2,1)-nodes(1,1);
-    
+
       B1=zeros(3,2);
       B1=[b(1) 0;0 c(1);c(1) b(1)]
       B2=zeros(3,2);
       B2=[b(2) 0;0 c(2);c(2) b(2)]
       B3=zeros(3,2);
       B3=[b(3) 0;0 c(3);c(3) b(3)]
-    
+
       B=[B1 B2 B3];
-    
+
       localK=(1/(4*A)).*(B' * D * B);
    else
       %Elemento cuadrangular
@@ -44,24 +44,24 @@ function [localK] = fem2d_pstr_genK(nodes,D,th)
             for j=1:2
                 s=inter(i);
                 t=inter(j);
-                
+
                 DN = [ -(1-t)  (1-t) (1+t) -(1+t);
                  -(1-s) -(1+s) (1+s)  (1-s) ] / 4;
 
               J = DN * nodes;
-    
+
               dN = inv(J) * DN;
-    
+
               B = zeros(3,8);
               B(1,1:2:8) = dN(1,:);
               B(2,2:2:8) = dN(2,:);
               B(3,1:2:8) = dN(2,:);
               B(3,2:2:8) = dN(1,:);
-    
+
               localK += B' * D * B * det(J);
             end
         end
-        
+
    end
     localK*=th;
 end
