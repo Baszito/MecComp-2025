@@ -41,27 +41,30 @@ function [T] = elemFinitos(xnode, model, cb, et,tip_func)
     %--------------------------------------------------
     % 4. Ensamblado elemento a elemento
     %--------------------------------------------------
-    for e = 1:Nelem
-        h = xnode(e+1) - xnode(e);
+    if(tip_func==1)
+      for e = 1:Nelem
+          h = xnode(e+1) - xnode(e);
 
-        % Derivadas de funciones de forma
-        dN_dx = [-1, 1];
+          % Derivadas de funciones de forma
+          dN_dx = [-1, 1];
 
-        % Matrices locales
-        Ke  = (k/h) * (dN_dx' * dN_dx);
-        Ce  = (h/6) * [2 1; 1 2];
+          % Matrices locales
+          Ke  = (k/h) * (dN_dx' * dN_dx);
+          Ce  = (h/6) * [2 1; 1 2];
 
-        % centro del elemento
-        xc = xnode(e) + h/2;
-        fe  = G(xc) * (h/2) * [1; 1];
+          % centro del elemento
+          xc = xnode(e) + h/2;
+          fe  = G(xc) * (h/2) * [1; 1];
 
-        % Ensamblado global
-        idx = [e, e+1];
-        Kg(idx,idx) = Kg(idx,idx) + Ke;
-        Cg(idx,idx) = Cg(idx,idx) + Ce;
-        fg(idx) = fg(idx) + fe;
+          % Ensamblado global
+          idx = [e, e+1];
+          Kg(idx,idx) = Kg(idx,idx) + Ke;
+          Cg(idx,idx) = Cg(idx,idx) + Ce;
+          fg(idx) = fg(idx) + fe;
+      end
+    else
+      [Kg,Cg,fg,xnode]=FuncCuad(xnode,k,G);
     end
-
     %--------------------------------------------------
     % 5. Aplicación de condiciones de borde
     %--------------------------------------------------

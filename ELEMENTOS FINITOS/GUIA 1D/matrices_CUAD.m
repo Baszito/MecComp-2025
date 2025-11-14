@@ -2,9 +2,9 @@ clc;
 clear all;
 
 %% =================== DATOS ===================
-he = 1/3;        % longitud de cada elemento
-k = 2;           % conductividad / módulo
-c = 5;           % coeficiente de reacción
+he = 2/3;        % longitud de cada elemento
+k = 1;           % conductividad / módulo
+c = 1;           % coeficiente de reacción
 n_nodes = 4;     % nodos globales
 n_elem = 3;      % número de elementos
 

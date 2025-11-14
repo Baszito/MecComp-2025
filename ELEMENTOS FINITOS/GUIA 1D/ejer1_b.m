@@ -52,7 +52,7 @@ for i=1:cant_nodos-1
   #Armado vector F
   F(i)=G(i)*h;
 endfor
-
+K
 #imponemos condiciones de borde
 
 #Condicion Dirichlet :

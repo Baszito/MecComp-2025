@@ -12,7 +12,7 @@ model.c=0;
 model.G=@(x) zeros(1,length(x))+100;
 cb=[1 10 0;1 50 0];
 
-elemFinitos(xnode,model,cb,0,1)
+elemFinitos(xnode,model,cb,[0 0 0 0],2)
 
 ####Ejercicio B
 ##xnode=linspace(0,2,4);
@@ -97,23 +97,22 @@ elemFinitos(xnode,model,cb,0,1)
 ##plot(xnode,vec_y,'r');
 
 ####Ejercicio G
-xnode=linspace(0,1,4);
-model.p=1;
-model.cp=1;
-model.k=2;
-model.c=-2;
-G=@(x) zeros(1,length(x));
-model.G=G(xnode);
-cb=[1 50 0;2 5 0];
-
-
-T=elemFinitos(xnode,model,cb,2)
-
-T_an=@(z) 73.2433.*sin(z)+50.*cos(z);
-vec_y=T_an(xnode);
-
-figure;
-plot(xnode,T,'b');
-hold on;
-grid on;
-plot(xnode,vec_y,'r');
+##xnode=linspace(0,1,4);
+##model.rho=1;
+##model.cp=1;
+##model.k=2;
+##model.c=-2;
+##model.G=@(x) zeros(1,length(x));
+##cb=[1 50 0;2 5 0];
+##
+##
+##T=elemFinitos(xnode,model,cb,[1 10000 0.0001 0.01])
+##
+##T_an=@(z) 73.2433.*sin(z)+50.*cos(z);
+##vec_y=T_an(xnode);
+##
+##figure;
+##plot(xnode,T,'b');
+##hold on;
+##grid on;
+##plot(xnode,vec_y,'r');

@@ -22,13 +22,13 @@ model.ky=1;
 model.c=0;
 G=@(x,y) 100.*((x-0.5).^2 + (y-0.5).^2);
 model.G=G(xnode(:,1),xnode(:,2));
-model.ts=2;
+model.ts=0;
 model.rho=1;
 model.cp=1;
 model.maxit=1000;
-model.tol=0.0001;
+model.tol=0.00001;
 model.dt=1e-3;
-model.PHI_n=[0 0 0 0];
+model.PHI_n=[0 0 0 0 0 0 0 0 0]';
 
 DIR=[1 0;
      2 0;
@@ -44,4 +44,4 @@ ROB=[];
 PUN=[];
 
 [PHI,Q]= fem2d_heat(xnode,icone,DIR,NEU,ROB,PUN,model);
-fem2d_heat_graph_mesh(PHI,Q,xnode,icone,0,0);
+fem2d_heat_graph_mesh(PHI,Q,xnode,icone,0,1);graph_mesh(PHI,Q,xnode,icone,0,0);
